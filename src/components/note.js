@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { FaPencilAlt, FaTrash, FaSave} from 'react-icons/fa/'
 
-
+//ref is reference to whatever content is (like ($event) in angular?)
 
 class Note extends Component{
     constructor(props){
@@ -22,8 +22,14 @@ class Note extends Component{
         })
     }
 
-    save(){
-        alert('saved')
+    save(e){
+        e.preventDefault()
+        this.props.onChange(this._newText.value, this.props.index)
+        this.setState({
+            editing: false
+        })
+
+       // alert(this._newText.value) //Event binding, like interpolation
     }
 
     remove(){
@@ -32,10 +38,10 @@ class Note extends Component{
 
     renderForm(){
         return (
-            <div class='note'>
-                <form>
-                    <textarea />
-                    <button onClick={this.save}><FaSave /></button>
+            <div className='note'>
+                <form onSubmit={this.save}>
+                    <textarea ref={input => this._newText = input}/>
+                    <button id='save'><FaSave /></button>
                 </form>
             </div>
         )
@@ -44,7 +50,7 @@ class Note extends Component{
     renderDisplay(){
         return (
             <div className='note'>
-                <p>Learning React</p>
+                <p>{this.props.children}</p>
                 <span>
                     <button id='edit' onClick={this.edit}> <FaPencilAlt /> </button>
                     <button id='remove' onClick={this.remove}> <FaTrash /> </button>
