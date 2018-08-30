@@ -2,6 +2,20 @@ import React, { Component } from 'react'
 import Note from './note'
 import { FaPlus } from 'react-icons/fa'
 
+/***
+ * Lifecycle
+ * 
+ * 
+ * Mounting Lifecycle
+ *   componentWillMount() => happens BEFORE the RENDER method is called, good place to get/load data (ngOnInit)
+ *   componentDidMount() => right after initial render
+ * 
+ * Updating Lifecycle
+ *   componentDidUpdate() => component updates (ngOnChange)
+ *   
+ * 
+ */
+
 class Board extends Component {
     constructor(props) {
         super(props)
@@ -15,6 +29,23 @@ class Board extends Component {
         this.removeNote = this.removeNote.bind(this)
         this.addNote = this.addNote.bind(this)
         this.nextID = this.nextID.bind(this)
+    }
+
+    componentWillMount() {
+        let self = this
+        if(this.props.count) {
+            fetch(`https://baconipsum.com/api/?type=all-meat&sentences=${this.props.count}`)
+                .then(response => response.json())
+                .then(json => json[0]
+                    .split('. ')
+                    .forEach(sentence => self.addNote(sentence.substring(0, 25))))
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+        return (
+            this.props.children !== nextProps.children || this.state !== nextState
+        )
     }
 
     addNote(noteText){
@@ -52,7 +83,7 @@ class Board extends Component {
 
     eachNote(note, i) {
         return (
-            <Note key={i} index={i}
+            <Note key={note.ID} index={note.ID}
             onChange={this.updateNote}
             onRemove={this.removeNote}>
                 { note.note }
